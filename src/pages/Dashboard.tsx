@@ -1,4 +1,4 @@
-import { Plus, BarChart3, Eye, ShieldCheck, Mail, Save, Clock, Trash2, Edit } from 'lucide-react';
+import { Plus, BarChart3, Eye, ShieldCheck, Mail, Save, Clock, Trash2, Edit, Wallet, ArrowUpRight, Lock, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
@@ -34,12 +34,12 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             { label: "Active Listings", value: "3", icon: <BarChart3 className="w-5 h-5 text-neutral-500" />, trend: "+1 this week"},
             { label: "Total Views", value: "1,248", icon: <Eye className="w-5 h-5 text-neutral-500" />, trend: "+12% this week"},
-            { label: "Pending Sales (Escrow)", value: "$400", icon: <Clock className="w-5 h-5 text-neutral-500" />, trend: "1 waiting delivery"},
             { label: "Unread Messages", value: "2", icon: <Mail className="w-5 h-5 text-neutral-500" />, trend: "Reply quickly to boost score"},
+            { label: "Completed Deals", value: "14", icon: <CheckCircle2 className="w-5 h-5 text-neutral-500" />, trend: "100% positive feedback"},
           ].map((stat, i) => (
             <div key={i} className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
               <div className="flex justify-between items-start mb-4">
@@ -50,6 +50,54 @@ export default function Dashboard() {
               <div className="text-xs text-neutral-500 font-medium bg-neutral-100 inline-block px-2 py-1 rounded">{stat.trend}</div>
             </div>
           ))}
+        </div>
+
+        {/* Wallet Section */}
+        <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden mb-8">
+           <div className="p-6 border-b border-neutral-200 bg-neutral-50/50 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-neutral-900 flex items-center gap-2">
+                <Wallet className="w-5 h-5 text-primary-600" /> My Wallet
+              </h2>
+              <Link to="#" className="text-sm font-medium text-primary-600 hover:text-primary-700">View History</Link>
+           </div>
+           
+           <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-neutral-100">
+             
+             {/* Pending / Escrow Funds */}
+             <div className="p-6">
+                <div className="flex items-start justify-between mb-2">
+                  <span className="text-sm font-medium text-neutral-500 flex items-center gap-1">
+                    <Lock className="w-4 h-4" /> Pending in Escrow
+                  </span>
+                </div>
+                <div className="text-4xl font-bold text-amber-500 tracking-tight">$400.00</div>
+                <p className="text-xs text-neutral-500 mt-2">1 active deal. Funds will be released when the buyer confirms receipt.</p>
+                <div className="mt-4 flex flex-col gap-2 relative">
+                   <div className="w-full bg-neutral-100 rounded-lg p-3 text-sm flex justify-between items-center border border-neutral-200">
+                     <span className="font-medium">Herman Miller Aeron Chair</span>
+                     <span className="font-bold text-amber-600">$400</span>
+                   </div>
+                </div>
+             </div>
+
+             {/* Paid / Available Funds */}
+             <div className="p-6">
+                <div className="flex items-start justify-between mb-2">
+                  <span className="text-sm font-medium text-neutral-500 flex items-center gap-1">
+                    <CheckCircle2 className="w-4 h-4 text-green-500" /> Available to Cash Out
+                  </span>
+                </div>
+                <div className="text-4xl font-bold text-neutral-900 tracking-tight">$850.00</div>
+                <p className="text-xs text-neutral-500 mt-2">Funds from completed deals. Ready to transfer to your bank account.</p>
+                
+                <div className="mt-4">
+                  <button className="bg-neutral-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-neutral-800 transition flex items-center gap-2 shadow-sm w-full sm:w-auto justify-center">
+                    Cash Out to Bank <ArrowUpRight className="w-4 h-4" />
+                  </button>
+                </div>
+             </div>
+
+           </div>
         </div>
 
         {/* Main Content Area */}
