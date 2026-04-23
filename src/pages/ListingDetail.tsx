@@ -39,7 +39,12 @@ Happy to let you test it out before accepting the item. Let me know if you have 
   };
 
   const shippingCost = 15;
-  const total = deliveryMethod === 'shipping' ? data.price + shippingCost : data.price;
+  const buyerFeePercent = 0.05;
+  const buyerFee = data.price * buyerFeePercent;
+  const total = (deliveryMethod === 'shipping' ? data.price + shippingCost + buyerFee : data.price + buyerFee);
+  
+  const sellerFeePercent = 0.05;
+  const sellerEarnings = data.price - (data.price * sellerFeePercent);
 
   const handlePay = () => {
     setCheckoutStep('processing');
@@ -317,11 +322,37 @@ Happy to let you test it out before accepting the item. Let me know if you have 
                     </div>
                   )}
 
+                  {/* Order Summary breakdown */}
+                  <div className="bg-neutral-50 rounded-xl p-4 mb-6 border border-neutral-200 text-sm space-y-2">
+                    <div className="flex justify-between items-center text-neutral-600">
+                      <span>Item Price</span>
+                      <span>${data.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                    {deliveryMethod === 'shipping' && (
+                      <div className="flex justify-between items-center text-neutral-600">
+                        <span>Shipping</span>
+                        <span>${shippingCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center text-neutral-600 border-b border-neutral-200 pb-2">
+                      <span>Buyer Protection Fee (5%)</span>
+                      <span>${buyerFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                    <div className="flex justify-between items-center font-bold text-neutral-900 pt-2 text-base">
+                      <span>Total to Pay</span>
+                      <span>${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-neutral-200 text-xs text-neutral-500 flex justify-between">
+                      <span className="flex items-center gap-1"><Lock className="w-3 h-3" /> Seller Payout:</span>
+                      <span className="font-medium text-neutral-600">${sellerEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (after 5% seller fee)</span>
+                    </div>
+                  </div>
+
                   <button 
                     onClick={handlePay}
                     className="w-full bg-primary-600 text-white font-bold py-4 rounded-xl hover:bg-primary-700 transition shadow-sm"
                   >
-                    Pay ${total.toLocaleString()} Securely
+                    Pay ${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Securely
                   </button>
                   <p className="text-xs text-center text-neutral-500 mt-4 flex items-center justify-center gap-1">
                     <Lock className="w-3 h-3" /> Payments are processed securely and held in Escrow.
@@ -344,7 +375,7 @@ Happy to let you test it out before accepting the item. Let me know if you have 
                   </div>
                   <h3 className="text-2xl font-bold text-neutral-900 mb-2">Payment Secured!</h3>
                   <p className="text-neutral-600 text-center mb-8 max-w-sm">
-                    Findit Escrow has successfully locked ${total.toLocaleString()}. {deliveryMethod === 'meetup' ? 'The seller has been notified to arrange a meetup.' : 'The seller has been notified to ship your item.'}
+                    Findit Escrow has successfully locked ${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}. {deliveryMethod === 'meetup' ? 'The seller has been notified to arrange a meetup.' : 'The seller has been notified to ship your item.'}
                   </p>
                   
                   <div className="w-full space-y-3">
