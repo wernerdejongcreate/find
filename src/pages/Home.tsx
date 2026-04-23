@@ -27,7 +27,7 @@ export default function Home() {
               <Link to="/marketplace" className="bg-white text-primary-900 px-8 py-4 rounded-xl text-center font-bold text-lg hover:bg-neutral-100 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.15)] flex justify-center items-center gap-2">
                 Start Buying <ChevronRight className="w-5 h-5" />
               </Link>
-              <Link to="/dashboard" className="bg-primary-800 text-white px-8 py-4 rounded-xl text-center font-bold text-lg hover:bg-primary-700 border border-primary-700 transition-colors flex justify-center items-center gap-2">
+              <Link to="/create-listing" className="bg-primary-800 text-white px-8 py-4 rounded-xl text-center font-bold text-lg hover:bg-primary-700 border border-primary-700 transition-colors flex justify-center items-center gap-2">
                 Sell an Item
               </Link>
             </div>

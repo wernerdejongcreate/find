@@ -39,7 +39,7 @@ export default function Layout() {
                 <LogIn className="w-4 h-4" />
                 Sign In
               </Link>
-              <Link to="/dashboard" className="bg-primary-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm">
+              <Link to="/create-listing" className="bg-primary-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm">
                 Sell an Item
               </Link>
             </div>
@@ -65,7 +65,7 @@ export default function Layout() {
             <Link to="/dashboard" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 hover:bg-neutral-50">Seller Dashboard</Link>
             <div className="pt-4 border-t border-neutral-100 flex flex-col gap-2">
               <Link to="/login" onClick={toggleMenu} className="block w-full text-center px-4 py-2 border border-neutral-300 rounded-lg text-base font-medium bg-white text-neutral-700">Sign In</Link>
-              <Link to="/dashboard" onClick={toggleMenu} className="block w-full text-center px-4 py-2 rounded-lg text-base font-medium bg-primary-600 text-white">Sell an Item</Link>
+              <Link to="/create-listing" onClick={toggleMenu} className="block w-full text-center px-4 py-2 rounded-lg text-base font-medium bg-primary-600 text-white">Sell an Item</Link>
             </div>
           </div>
         )}

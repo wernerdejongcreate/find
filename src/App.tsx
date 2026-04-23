@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import TrustSafety from './pages/TrustSafety';
 import Payments from './pages/Payments';
 import AuthFlow from './pages/AuthFlow';
+import CreateListing from './pages/CreateListing';
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="trust" element={<TrustSafety />} />
           <Route path="payments" element={<Payments />} />
+          <Route path="create-listing" element={<CreateListing />} />
         </Route>
       </Routes>
     </BrowserRouter>

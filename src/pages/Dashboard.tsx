@@ -12,7 +12,7 @@ export default function Dashboard() {
             <h1 className="text-3xl font-bold text-neutral-900 tracking-tight">Seller Dashboard</h1>
             <p className="text-neutral-500 mt-1">Manage listings, track performance, and handle escrows.</p>
           </div>
-          <Link to="#" className="inline-flex items-center justify-center gap-2 bg-primary-600 text-white px-5 py-3 rounded-xl font-bold hover:bg-primary-700 transition shadow-sm border border-primary-700">
+          <Link to="/create-listing" className="inline-flex items-center justify-center gap-2 bg-primary-600 text-white px-5 py-3 rounded-xl font-bold hover:bg-primary-700 transition shadow-sm border border-primary-700">
             <Plus className="w-5 h-5" /> Create New Listing
           </Link>
         </div>

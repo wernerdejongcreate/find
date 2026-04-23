@@ -59,7 +59,6 @@ export default function AuthFlow({ mode }: { mode: 'login' | 'signup' }) {
                       name="email" 
                       type="email" 
                       autoComplete="email" 
-                      required 
                       className="appearance-none block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-xl shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-colors" 
                       placeholder="you@example.com"
                     />
@@ -77,7 +76,6 @@ export default function AuthFlow({ mode }: { mode: 'login' | 'signup' }) {
                       name="password" 
                       type="password" 
                       autoComplete={mode === 'login' ? 'current-password' : 'new-password'} 
-                      required 
                       className="appearance-none block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-xl shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-colors" 
                       placeholder="••••••••"
                     />
@@ -146,10 +144,10 @@ export default function AuthFlow({ mode }: { mode: 'login' | 'signup' }) {
               </div>
 
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <button className="w-full inline-flex justify-center py-3 px-4 border border-neutral-300 rounded-xl shadow-sm bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition">
+                <button type="button" onClick={() => navigate('/dashboard')} className="w-full inline-flex justify-center py-3 px-4 border border-neutral-300 rounded-xl shadow-sm bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition">
                   Google
                 </button>
-                <button className="w-full inline-flex justify-center py-3 px-4 border border-neutral-300 rounded-xl shadow-sm bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition">
+                <button type="button" onClick={() => navigate('/dashboard')} className="w-full inline-flex justify-center py-3 px-4 border border-neutral-300 rounded-xl shadow-sm bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition">
                   Apple
                 </button>
               </div>
