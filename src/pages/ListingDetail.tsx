@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MapPin, ShieldCheck, Clock, CheckCircle2, AlertTriangle, MessageSquare, Heart, Lock, ChevronLeft, CreditCard, X, Smartphone, Loader2 } from 'lucide-react';
+import { MapPin, ShieldCheck, Clock, CheckCircle2, AlertTriangle, MessageSquare, Heart, Lock, ChevronLeft, CreditCard, X, Smartphone, Loader2, Truck, User } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
 export default function ListingDetail() {
@@ -8,6 +8,7 @@ export default function ListingDetail() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<'details' | 'processing' | 'success'>('details');
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple'>('card');
+  const [deliveryMethod, setDeliveryMethod] = useState<'meetup' | 'shipping'>('meetup');
 
   // Mock data based on the ID for preview
   const data = {
@@ -36,6 +37,9 @@ Happy to let you test it out before accepting the item. Let me know if you have 
       avgResponseTime: "< 1 hour"
     }
   };
+
+  const shippingCost = 15;
+  const total = deliveryMethod === 'shipping' ? data.price + shippingCost : data.price;
 
   const handlePay = () => {
     setCheckoutStep('processing');
@@ -204,10 +208,10 @@ Happy to let you test it out before accepting the item. Let me know if you have 
       {/* CHECKOUT MODAL */}
       {showCheckout && (
         <div className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
             
             {/* Header */}
-            <div className="px-6 py-4 border-b border-neutral-100 flex justify-between items-center bg-neutral-50">
+            <div className="px-6 py-4 border-b border-neutral-100 flex justify-between items-center bg-neutral-50 shrink-0 rounded-t-3xl">
               <div className="flex items-center gap-2 text-primary-900 font-bold text-lg">
                 <Lock className="w-5 h-5 text-green-500" /> Secure Checkout
               </div>
@@ -221,7 +225,7 @@ Happy to let you test it out before accepting the item. Let me know if you have 
               )}
             </div>
 
-            <div className="p-6 md:p-8 min-h-[400px]">
+            <div className="p-6 md:p-8 min-h-[400px] overflow-y-auto">
               
               {checkoutStep === 'details' && (
                 <div className="animate-in fade-in slide-in-from-right-4">
@@ -233,6 +237,40 @@ Happy to let you test it out before accepting the item. Let me know if you have 
                       <div className="font-bold text-primary-600 mt-1">${data.price.toLocaleString()}</div>
                     </div>
                   </div>
+
+                  <div className="mb-6 border-b border-neutral-100 pb-6">
+                    <h3 className="text-sm font-semibold text-neutral-900 mb-3">Delivery Method</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button 
+                        onClick={() => setDeliveryMethod('meetup')}
+                        className={`p-4 border rounded-xl flex flex-col items-center justify-center gap-2 transition-all ${deliveryMethod === 'meetup' ? 'border-primary-600 bg-primary-50 text-primary-900 shadow-sm' : 'border-neutral-200 text-neutral-600 hover:bg-neutral-50'}`}
+                      >
+                        <User className="w-6 h-6" />
+                        <span className="text-sm font-medium">Local Meetup</span>
+                        <span className="text-xs text-neutral-500">Free</span>
+                      </button>
+                      <button 
+                        onClick={() => setDeliveryMethod('shipping')}
+                        className={`p-4 border rounded-xl flex flex-col items-center justify-center gap-2 transition-all ${deliveryMethod === 'shipping' ? 'border-primary-600 bg-primary-50 text-primary-900 shadow-sm' : 'border-neutral-200 text-neutral-600 hover:bg-neutral-50'}`}
+                      >
+                        <Truck className="w-6 h-6" />
+                        <span className="text-sm font-medium">Shipping</span>
+                        <span className="text-xs text-neutral-500">+${shippingCost}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {deliveryMethod === 'shipping' && (
+                    <div className="mb-6 border-b border-neutral-100 pb-6 animate-in fade-in slide-in-from-top-2">
+                       <label className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-3">Shipping Address</label>
+                       <input type="text" placeholder="Full Name" className="w-full px-4 py-3 mb-3 border border-neutral-300 rounded-xl focus:outline-none focus:bg-primary-50 transition shadow-sm" />
+                       <input type="text" placeholder="Street Address" className="w-full px-4 py-3 mb-3 border border-neutral-300 rounded-xl focus:outline-none focus:bg-primary-50 transition shadow-sm" />
+                       <div className="grid grid-cols-2 gap-3">
+                         <input type="text" placeholder="City" className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:bg-primary-50 transition shadow-sm" />
+                         <input type="text" placeholder="ZIP Code" className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:bg-primary-50 transition shadow-sm" />
+                       </div>
+                    </div>
+                  )}
 
                   <div className="mb-6">
                     <h3 className="text-sm font-semibold text-neutral-900 mb-3">Select Payment Method</h3>
@@ -283,7 +321,7 @@ Happy to let you test it out before accepting the item. Let me know if you have 
                     onClick={handlePay}
                     className="w-full bg-primary-600 text-white font-bold py-4 rounded-xl hover:bg-primary-700 transition shadow-sm"
                   >
-                    Pay ${data.price.toLocaleString()} Securely
+                    Pay ${total.toLocaleString()} Securely
                   </button>
                   <p className="text-xs text-center text-neutral-500 mt-4 flex items-center justify-center gap-1">
                     <Lock className="w-3 h-3" /> Payments are processed securely and held in Escrow.
@@ -306,7 +344,7 @@ Happy to let you test it out before accepting the item. Let me know if you have 
                   </div>
                   <h3 className="text-2xl font-bold text-neutral-900 mb-2">Payment Secured!</h3>
                   <p className="text-neutral-600 text-center mb-8 max-w-sm">
-                    Findit Escrow has successfully locked ${data.price.toLocaleString()}. The seller has been notified to arrange a meetup.
+                    Findit Escrow has successfully locked ${total.toLocaleString()}. {deliveryMethod === 'meetup' ? 'The seller has been notified to arrange a meetup.' : 'The seller has been notified to ship your item.'}
                   </p>
                   
                   <div className="w-full space-y-3">
