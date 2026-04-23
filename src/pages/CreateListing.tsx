@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { Camera, MapPin, DollarSign, ArrowRight, UploadCloud, Tag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useListings } from '../hooks/useListings';
 
 export default function CreateListing() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [title, setTitle] = useState('');
+  const [price, setPrice] = useState('');
+  const [condition, setCondition] = useState('Good');
+  const [sponsored, setSponsored] = useState(false);
   const navigate = useNavigate();
+  const { addListing } = useListings();
 
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
@@ -13,6 +19,21 @@ export default function CreateListing() {
       setStep(step + 1);
     } else {
       setIsSubmitting(true);
+      
+      const newListing = {
+        title: title || "New Untitled Listing",
+        price: parseFloat(price) || 0,
+        img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400", // Default shoe img
+        dist: 0.1,
+        verified: true,
+        time: "Just now",
+        sellerScore: 100,
+        condition: condition,
+        sponsored: sponsored,
+      };
+      
+      addListing(newListing);
+
       setTimeout(() => {
         navigate('/dashboard');
       }, 1000);
@@ -55,7 +76,7 @@ export default function CreateListing() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-1">Item Title</label>
-                    <input type="text" className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500" placeholder="e.g. Sony A7III Camera + Lens" />
+                    <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500" placeholder="e.g. Sony A7III Camera + Lens" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-1">Description</label>
@@ -76,7 +97,7 @@ export default function CreateListing() {
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <DollarSign className="h-5 w-5 text-neutral-500" />
                       </div>
-                      <input type="number" className="block w-full pl-11 pr-4 py-3 text-lg border border-neutral-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 font-semibold" placeholder="0.00" />
+                      <input type="number" required value={price} onChange={(e) => setPrice(e.target.value)} className="block w-full pl-11 pr-4 py-3 text-lg border border-neutral-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 font-semibold" placeholder="0.00" />
                     </div>
                   </div>
 
@@ -89,7 +110,7 @@ export default function CreateListing() {
                         <option>Clothing</option>
                         <option>Tools</option>
                       </select>
-                      <select className="px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary-500 bg-white">
+                      <select value={condition} onChange={(e) => setCondition(e.target.value)} className="px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary-500 bg-white">
                         <option>Brand New</option>
                         <option>Like New</option>
                         <option>Good</option>
@@ -106,6 +127,21 @@ export default function CreateListing() {
                       </div>
                       <input type="text" className="block w-full pl-11 pr-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500" defaultValue="94103" />
                     </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-neutral-200">
+                    <label className="flex items-start gap-3 p-4 bg-primary-50 border border-primary-200 rounded-xl cursor-pointer hover:bg-primary-100 transition shadow-sm">
+                      <input 
+                        type="checkbox" 
+                        checked={sponsored}
+                        onChange={(e) => setSponsored(e.target.checked)}
+                        className="mt-1 rounded border-primary-400 text-primary-600 focus:ring-primary-500" 
+                      />
+                      <div>
+                         <span className="block text-sm font-bold text-primary-900">Promote as Sponsored Listing</span>
+                         <span className="block text-xs text-primary-700 mt-1">Appear at the top of search results and category pages for 7 days.</span>
+                      </div>
+                    </label>
                   </div>
                 </div>
               </div>

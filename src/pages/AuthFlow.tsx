@@ -12,6 +12,7 @@ export default function AuthFlow({ mode }: { mode: 'login' | 'signup' }) {
       setStep(2);
     } else {
       // Simulate real auth
+      localStorage.setItem('findit_auth', 'true');
       navigate('/dashboard');
     }
   };

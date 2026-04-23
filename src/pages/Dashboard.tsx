@@ -1,10 +1,28 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Plus, BarChart3, Eye, ShieldCheck, Mail, Save, Clock, Trash2, Edit, Wallet, ArrowUpRight, Lock, CheckCircle2, ArrowDownRight, Package, Camera, UploadCloud, X, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useListings } from '../hooks/useListings';
 
 export default function Dashboard() {
   const [showProofModal, setShowProofModal] = useState(false);
   const [proofStep, setProofStep] = useState<'upload' | 'processing' | 'success'>('upload');
+  const [activeTab, setActiveTab] = useState<'active' | 'sold'>('active');
+  const [showCashOutSuccess, setShowCashOutSuccess] = useState(false);
+  
+  const { listings, markAsSold, deleteListing, cashOutFunds } = useListings();
+  const myActiveListings = listings.filter(l => l.isMine && !l.sold);
+  const mySoldListings = listings.filter(l => l.isMine && l.sold);
+
+  const pendingFunds = myActiveListings.reduce((acc, curr) => acc + curr.price, 0); // Fake pending
+  const availableFunds = mySoldListings.reduce((acc, curr) => curr.cashedOut ? acc : acc + curr.price, 0);
+
+  const handleCashOut = () => {
+    if (availableFunds > 0) {
+      cashOutFunds();
+      setShowCashOutSuccess(true);
+      setTimeout(() => setShowCashOutSuccess(false), 3000);
+    }
+  };
 
   const handleProofSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,10 +63,10 @@ export default function Dashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Active Listings", value: "3", icon: <BarChart3 className="w-5 h-5 text-neutral-500" />, trend: "+1 this week"},
+            { label: "Active Listings", value: myActiveListings.length.toString(), icon: <BarChart3 className="w-5 h-5 text-neutral-500" />, trend: "+1 this week"},
             { label: "Total Views", value: "1,248", icon: <Eye className="w-5 h-5 text-neutral-500" />, trend: "+12% this week"},
             { label: "Unread Messages", value: "2", icon: <Mail className="w-5 h-5 text-neutral-500" />, trend: "Reply quickly to boost score"},
-            { label: "Completed Deals", value: "14", icon: <CheckCircle2 className="w-5 h-5 text-neutral-500" />, trend: "100% positive feedback"},
+            { label: "Completed Deals", value: mySoldListings.length > 0 ? mySoldListings.length.toString() : "14", icon: <CheckCircle2 className="w-5 h-5 text-neutral-500" />, trend: "100% positive feedback"},
           ].map((stat, i) => (
             <div key={i} className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
               <div className="flex justify-between items-start mb-4">
@@ -79,13 +97,15 @@ export default function Dashboard() {
                     <Lock className="w-4 h-4" /> Pending in Escrow
                   </span>
                 </div>
-                <div className="text-4xl font-bold text-amber-500 tracking-tight">$400.00</div>
-                <p className="text-xs text-neutral-500 mt-2">1 active deal. Funds will be released when the buyer confirms receipt.</p>
+                <div className="text-4xl font-bold text-amber-500 tracking-tight">${pendingFunds.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <p className="text-xs text-neutral-500 mt-2">{myActiveListings.length} active deal{myActiveListings.length === 1 ? '' : 's'}. Funds will be released when the buyer confirms receipt.</p>
                 <div className="mt-4 flex flex-col gap-2 relative">
-                   <div className="w-full bg-neutral-100 rounded-lg p-3 text-sm flex justify-between items-center border border-neutral-200">
-                     <span className="font-medium">Herman Miller Aeron Chair</span>
-                     <span className="font-bold text-amber-600">$400</span>
-                   </div>
+                   {myActiveListings.slice(0, 3).map(l => (
+                     <div key={l.id} className="w-full bg-neutral-100 rounded-lg p-3 text-sm flex justify-between items-center border border-neutral-200">
+                       <span className="font-medium truncate pr-4">{l.title}</span>
+                       <span className="font-bold text-amber-600">${l.price}</span>
+                     </div>
+                   ))}
                 </div>
              </div>
 
@@ -96,13 +116,23 @@ export default function Dashboard() {
                     <CheckCircle2 className="w-4 h-4 text-green-500" /> Available to Cash Out
                   </span>
                 </div>
-                <div className="text-4xl font-bold text-neutral-900 tracking-tight">$850.00</div>
+                <div className="text-4xl font-bold text-neutral-900 tracking-tight">${availableFunds.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 <p className="text-xs text-neutral-500 mt-2">Funds from completed deals. Ready to transfer to your bank account.</p>
                 
                 <div className="mt-4">
-                  <button className="bg-neutral-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-neutral-800 transition flex items-center gap-2 shadow-sm w-full sm:w-auto justify-center">
-                    Cash Out to Bank <ArrowUpRight className="w-4 h-4" />
-                  </button>
+                  {showCashOutSuccess ? (
+                    <div className="bg-green-100 text-green-800 font-bold py-3 px-6 rounded-xl flex items-center gap-2 justify-center w-full sm:w-auto shadow-sm">
+                      <CheckCircle2 className="w-5 h-5" /> Transfer Initiated!
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={handleCashOut}
+                      disabled={availableFunds === 0}
+                      className="bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-300 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-xl transition flex items-center gap-2 shadow-sm w-full sm:w-auto justify-center"
+                    >
+                      Cash Out to Bank <ArrowUpRight className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
              </div>
 
@@ -112,7 +142,7 @@ export default function Dashboard() {
            <div className="bg-neutral-50 p-4 border-t border-neutral-200 grid grid-cols-2 divide-x divide-neutral-200 text-center">
              <div className="flex flex-col items-center justify-center">
                <p className="text-xs text-neutral-500 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"><ArrowDownRight className="w-3 h-3 text-green-500"/> Lifetime Money In</p>
-               <p className="text-xl font-bold text-green-600">+$2,450.00</p>
+               <p className="text-xl font-bold text-green-600">+${(availableFunds + 2450).toLocaleString()}</p>
              </div>
              <div className="flex flex-col items-center justify-center">
                <p className="text-xs text-neutral-500 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1"><ArrowUpRight className="w-3 h-3 text-red-500"/> Lifetime Money Spent</p>
@@ -122,87 +152,70 @@ export default function Dashboard() {
         </div>
 
         {/* Main Content Area */}
-        <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden mb-12">
           <div className="p-6 border-b border-neutral-200 flex justify-between items-center bg-neutral-50/50">
              <h2 className="text-lg font-bold text-neutral-900">Your Listings</h2>
              <div className="flex gap-2">
-                <button className="px-3 py-1.5 bg-white border border-neutral-300 rounded-lg text-sm font-medium shadow-sm hover:bg-neutral-50 transition">Active (3)</button>
-                <button className="px-3 py-1.5 text-neutral-500 hover:text-neutral-700 text-sm font-medium transition">Sold (14)</button>
+                <button 
+                  onClick={() => setActiveTab('active')}
+                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition shadow-sm ${activeTab === 'active' ? 'bg-white border border-neutral-300 text-neutral-900' : 'bg-transparent text-neutral-500 hover:text-neutral-700'}`}
+                >
+                  Active ({myActiveListings.length})
+                </button>
+                <button 
+                  onClick={() => setActiveTab('sold')}
+                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition shadow-sm ${activeTab === 'sold' ? 'bg-white border border-neutral-300 text-neutral-900' : 'bg-transparent text-neutral-500 hover:text-neutral-700'}`}
+                >
+                  Sold ({mySoldListings.length})
+                </button>
              </div>
           </div>
           
           <div className="divide-y divide-neutral-100">
-             {/* Example Active Listing 1 - In Escrow */}
-             <div className="p-6 flex flex-col md:flex-row gap-6 hover:bg-neutral-50/50 transition relative">
-                {/* Status Ribbon */}
-                <div className="absolute top-6 -left-2 bg-amber-500 text-white px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-r shadow-md z-10 flex items-center gap-1">
-                  <Lock className="w-3 h-3"/> Escrow Active
-                </div>
-
-                <div className="w-full md:w-48 aspect-[4/3] bg-neutral-100 rounded-xl overflow-hidden shrink-0 border border-neutral-200 pl-4 md:pl-0">
-                  <img src="https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover" />
-                </div>
-                
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-bold text-neutral-900 text-lg mb-1">Herman Miller Aeron Chair</h3>
-                    <div className="text-2xl font-bold text-primary-600 mb-4">$400</div>
+             {(activeTab === 'active' ? myActiveListings : mySoldListings).map(listing => (
+               <div key={listing.id} className="p-6 flex flex-col md:flex-row gap-6 hover:bg-neutral-50/50 transition relative">
+                  <div className="w-full md:w-40 aspect-[4/3] bg-neutral-100 rounded-xl overflow-hidden shrink-0 border border-neutral-200">
+                    <img src={listing.img} className="w-full h-full object-cover" />
                   </div>
                   
-                  {/* Escrow Status Area */}
-                  <div className="bg-amber-50/50 rounded-xl p-4 mb-4 border border-amber-200">
-                    <div className="flex justify-between items-start mb-2">
-                       <p className="text-sm font-bold text-amber-900">Buyer paid for shipping.</p>
-                       <span className="bg-amber-100 text-amber-800 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded">Action Required</span>
+                  <div className="flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-bold text-neutral-900 text-lg mb-1">{listing.title}</h3>
+                      <div className="text-xl font-bold text-neutral-600 mb-4">${listing.price.toLocaleString()}</div>
                     </div>
-                    <p className="text-xs text-amber-700 mb-3">Please provide the package weight and a photo of the item before shipping to activate Seller Protection.</p>
-                    <button onClick={() => setShowProofModal(true)} className="bg-primary-600 text-white text-sm font-bold px-4 py-2.5 rounded-lg hover:bg-primary-700 transition flex items-center gap-2 shadow-sm w-full justify-center sm:w-auto">
-                      <Camera className="w-4 h-4"/> Provide Shipping Proof
-                    </button>
+                    
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-500 mb-4 md:mb-0">
+                       <span className="flex items-center gap-1"><Eye className="w-4 h-4"/> 14 views</span>
+                       <span className="flex items-center gap-1"><Save className="w-4 h-4"/> 2 saves</span>
+                       <span className="flex items-center gap-1"><Clock className="w-4 h-4"/> Listed recently</span>
+                    </div>
                   </div>
-                  
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-500">
-                     <span className="flex items-center gap-1"><Eye className="w-4 h-4"/> 104 views</span>
-                     <span className="flex items-center gap-1"><Save className="w-4 h-4"/> 12 saves</span>
-                     <span className="flex items-center gap-1"><Clock className="w-4 h-4"/> Listed 4 days ago</span>
-                  </div>
-                </div>
 
-                <div className="flex flex-row md:flex-col gap-2 shrink-0 border-t md:border-t-0 md:border-l border-neutral-100 pt-4 md:pt-0 md:pl-6 items-center md:items-stretch justify-center">
-                   <Link to="/messages" className="bg-neutral-900 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-neutral-800 text-center flex items-center justify-center gap-2">
-                     <Mail className="w-4 h-4"/> Contact Buyer
-                   </Link>
-                </div>
-             </div>
-
-             {/* Example Active Listing 2 */}
-             <div className="p-6 flex flex-col md:flex-row gap-6 hover:bg-neutral-50/50 transition">
-                <div className="w-full md:w-40 aspect-[4/3] bg-neutral-100 rounded-xl overflow-hidden shrink-0 border border-neutral-200">
-                  <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover" />
-                </div>
-                
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-bold text-neutral-900 text-lg mb-1">Sony A7III Camera + Lens kit</h3>
-                    <div className="text-xl font-bold text-neutral-600 mb-4">$1,450</div>
+                  <div className="flex gap-2 shrink-0 items-start justify-end flex-col sm:flex-row">
+                     {!listing.sold && (
+                       <button onClick={() => markAsSold(listing.id)} className="px-4 py-2 border border-neutral-200 bg-white text-neutral-900 font-bold rounded-lg shadow-sm hover:bg-neutral-50 transition w-full sm:w-auto flex justify-center items-center gap-2">
+                         <CheckCircle2 className="w-4 h-4 text-green-500" /> Mark Sold
+                       </button>
+                     )}
+                     <div className="flex gap-2 w-full justify-end">
+                       {!listing.sold && (
+                         <button className="p-2 border border-neutral-200 text-neutral-600 rounded-lg shadow-sm hover:bg-neutral-50 transition tooltip-trigger" title="Edit">
+                           <Edit className="w-4 h-4" />
+                         </button>
+                       )}
+                       <button onClick={() => deleteListing(listing.id)} className="p-2 border border-neutral-200 text-red-500 rounded-lg shadow-sm hover:bg-red-50 transition" title="Delete">
+                         <Trash2 className="w-4 h-4" />
+                       </button>
+                     </div>
                   </div>
-                  
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-500 mb-4 md:mb-0">
-                     <span className="flex items-center gap-1"><Eye className="w-4 h-4"/> 845 views</span>
-                     <span className="flex items-center gap-1"><Save className="w-4 h-4"/> 34 saves</span>
-                     <span className="flex items-center gap-1"><Clock className="w-4 h-4"/> Listed 2 hrs ago</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 shrink-0 items-start justify-end">
-                   <button className="p-2 border border-neutral-200 text-neutral-600 rounded-lg shadow-sm hover:bg-neutral-50 transition tooltip-trigger" title="Edit">
-                     <Edit className="w-4 h-4" />
-                   </button>
-                   <button className="p-2 border border-neutral-200 text-red-500 rounded-lg shadow-sm hover:bg-red-50 transition" title="Delete">
-                     <Trash2 className="w-4 h-4" />
-                   </button>
-                </div>
-             </div>
+               </div>
+             ))}
+             
+             {(activeTab === 'active' ? myActiveListings : mySoldListings).length === 0 && (
+               <div className="p-12 text-center text-neutral-500">
+                 You don't have any {activeTab} listings right now.
+               </div>
+             )}
           </div>
         </div>
 

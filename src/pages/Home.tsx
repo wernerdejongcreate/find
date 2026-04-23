@@ -1,7 +1,13 @@
+import { useState } from 'react';
 import { ShieldCheck, MapPin, Lock, CreditCard, ChevronRight, Star, TrendingUp } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useListings } from '../hooks/useListings';
+import { motion } from 'motion/react';
 
 export default function Home() {
+  const { listings } = useListings();
+  const recentListings = listings.filter(l => !l.sold).slice(0, 4);
+  const navigate = useNavigate();
   return (
     <div>
       {/* HERO SECTION */}
@@ -10,14 +16,19 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-800 via-primary-900 to-neutral-900 opacity-80 z-0"></div>
         
         <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="max-w-2xl">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="max-w-2xl"
+          >
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-medium mb-6 border border-green-500/30 backdrop-blur-sm">
               <ShieldCheck className="w-4 h-4" />
               100% Protection Guarantee
             </div>
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-[1.1] text-white">
-              Buy and sell locally—<br />
-              <span className="text-primary-300">without getting scammed.</span>
+              Buy and sell locally.
             </h1>
             <p className="text-lg md:text-xl text-primary-100 mb-8 max-w-lg leading-relaxed">
               Secure payments. Verified users. Full buyer protection. Findit is the safest way to trade in your community.
@@ -44,10 +55,16 @@ export default function Home() {
                 <CreditCard className="w-4 h-4 text-green-400" /> Escrow Protection
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Hero Visual */}
-          <div className="relative mx-auto lg:mx-0 w-full max-w-md hidden md:block">
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="relative mx-auto lg:mx-0 w-full max-w-md hidden md:block"
+          >
             <div className="absolute inset-0 bg-gradient-to-tr from-accent-500/20 to-primary-500/20 rounded-3xl blur-3xl"></div>
             <div className="relative bg-white p-6 rounded-3xl shadow-2xl border border-neutral-100">
               <div className="flex items-center justify-between mb-4">
@@ -78,12 +95,18 @@ export default function Home() {
               </div>
               <button className="w-full bg-primary-600 text-white font-semibold py-3 rounded-xl hover:bg-primary-700 transition">Buy Now with Escrow</button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-24 bg-white">
+      <motion.section 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-24 bg-white"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-neutral-900 tracking-tight mb-4">How Findit Escrow Works</h2>
@@ -99,21 +122,34 @@ export default function Home() {
               { step: 2, icon: <Lock className="w-8 h-8 text-neutral-900" />, title: "Pay securely in-app", desc: "Your money goes into our secure holding account, not directly to the seller." },
               { step: 3, icon: <ShieldCheck className="w-8 h-8 text-green-500" />, title: "Confirm & Release", desc: "Meet up, inspect the item. Only when you tap 'Item Received' does the seller get paid." }
             ].map((s, i) => (
-              <div key={i} className="relative z-10 flex flex-col items-center text-center">
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.2 }}
+                className="relative z-10 flex flex-col items-center text-center"
+              >
                 <div className="w-20 h-20 bg-white rounded-2xl shadow-xl flex items-center justify-center mb-6 border border-neutral-100">
                   {s.icon}
                 </div>
                 <div className="inline-block bg-primary-100 text-primary-800 font-bold px-3 py-1 rounded-full text-xs mb-4">STEP {s.step}</div>
                 <h3 className="text-xl font-bold text-neutral-900 mb-2">{s.title}</h3>
                 <p className="text-neutral-500">{s.desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* TRUST & COMPARISON SECTION */}
-      <section className="py-24 bg-neutral-50 border-y border-neutral-200">
+      <motion.section 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-24 bg-neutral-50 border-y border-neutral-200"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -126,7 +162,14 @@ export default function Home() {
                   { title: "ID Verification", desc: "Sellers can link their local ID for a Verified badge, boosting trust." },
                   { title: "Fraud Detection Engine", desc: "Our AI scans for duplicate listings, price anomalies, and suspicious seller behavior." }
                 ].map((feature, i) => (
-                  <div key={i} className="flex gap-4">
+                  <motion.div 
+                    key={i} 
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.15 }}
+                    className="flex gap-4"
+                  >
                     <div className="mt-1 bg-green-100 p-2 rounded-full h-8 w-8 flex items-center justify-center shrink-0">
                       <ShieldCheck className="w-4 h-4 text-green-600" />
                     </div>
@@ -134,7 +177,7 @@ export default function Home() {
                       <h4 className="font-bold text-neutral-900">{feature.title}</h4>
                       <p className="text-neutral-500 text-sm mt-1">{feature.desc}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -172,10 +215,16 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* FEATURED LISTINGS GRID */}
-      <section className="py-24 bg-white">
+      <motion.section 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-24 bg-white"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-10">
             <div>
@@ -188,35 +237,46 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { id: 1, title: "Sony A7III Camera + Lens", price: "$1,450", img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400", dist: "1.2 miles", verified: true, time: "2h ago" },
-              { id: 2, title: "Herman Miller Aeron Chair", price: "$400", img: "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?auto=format&fit=crop&q=80&w=400", dist: "3.5 miles", verified: true, time: "4h ago" },
-              { id: 3, title: "MacBook Pro M1 2020", price: "$750", img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400", dist: "0.8 miles", verified: false, time: "5h ago" },
-              { id: 4, title: "Nintendo Switch OLED", price: "$280", img: "https://images.unsplash.com/photo-1622297843482-19e0edb8932c?auto=format&fit=crop&q=80&w=400", dist: "2.1 miles", verified: true, time: "1d ago" },
-            ].map((item) => (
-              <Link to={`/listing/${item.id}`} key={item.id} className="group flex flex-col bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <div className="relative aspect-square overflow-hidden bg-neutral-100">
-                  <img src={item.img} alt={item.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-semibold text-neutral-700 shadow-sm">
-                    {item.time}
+            {recentListings.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="h-full"
+              >
+                <Link 
+                  onClick={(e) => {
+                     if (item.isMine) {
+                        e.preventDefault();
+                        navigate(`/messages?chatId=${item.id}`);
+                     }
+                  }}
+                  to={`/listing/${item.id}`} className="group h-full flex flex-col bg-white rounded-2xl border border-neutral-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <div className="relative aspect-square overflow-hidden bg-neutral-100">
+                    <img src={item.img} alt={item.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-semibold text-neutral-700 shadow-sm">
+                      {item.time}
+                    </div>
                   </div>
-                </div>
-                <div className="p-4 flex flex-col flex-grow">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-neutral-900 leading-tight line-clamp-2 pr-4">{item.title}</h3>
+                  <div className="p-4 flex flex-col flex-grow">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-semibold text-neutral-900 leading-tight line-clamp-2 pr-4">{item.title}</h3>
+                    </div>
+                    <div className="text-xl font-bold text-primary-600 mb-4">${item.price.toLocaleString()}</div>
+                    
+                    <div className="mt-auto pt-4 border-t border-neutral-100 flex items-center justify-between text-xs text-neutral-500">
+                      <span className="flex items-center gap-1"><MapPin className="w-3 h-3"/> {item.dist} miles</span>
+                      {item.verified && (
+                        <span className="flex items-center gap-1 text-green-600 font-medium">
+                          <ShieldCheck className="w-3 h-3" /> Verified
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-xl font-bold text-primary-600 mb-4">{item.price}</div>
-                  
-                  <div className="mt-auto pt-4 border-t border-neutral-100 flex items-center justify-between text-xs text-neutral-500">
-                    <span className="flex items-center gap-1"><MapPin className="w-3 h-3"/> {item.dist}</span>
-                    {item.verified && (
-                      <span className="flex items-center gap-1 text-green-600 font-medium">
-                        <ShieldCheck className="w-3 h-3" /> Verified
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             ))}
           </div>
           
@@ -224,10 +284,16 @@ export default function Home() {
              <Link to="/marketplace" className="inline-block border border-neutral-300 rounded-lg px-6 py-3 font-semibold text-neutral-700 w-full">View All Items</Link>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* FINAL CTA */}
-      <section className="py-24 bg-primary-900 text-white text-center px-4">
+      <motion.section 
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-24 bg-primary-900 text-white text-center px-4"
+      >
         <div className="max-w-3xl mx-auto">
           <ShieldCheck className="w-16 h-16 mx-auto mb-8 text-green-400" />
           <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Join thousands trading safely</h2>
@@ -239,7 +305,7 @@ export default function Home() {
           </Link>
           <p className="mt-6 text-sm text-primary-300">Takes less than 2 minutes. No credit card required to browse.</p>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

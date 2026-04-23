@@ -30,4 +30,5 @@ body {
   background-color: var(--color-neutral-50);
   color: var(--color-neutral-900);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }

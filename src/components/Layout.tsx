@@ -1,41 +1,63 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { ShieldCheck, Search, MessageSquare, User, Menu, X, LogIn } from 'lucide-react';
-import { useState } from 'react';
+import { ShieldCheck, Search, MessageSquare, User, Menu, X, LogIn, Settings as SettingsIcon } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    // Ensuring light mode
+    window.document.documentElement.classList.remove('dark');
+    localStorage.setItem('findit_theme', 'light');
+
+    // Initialize verification
+    const checkVerify = () => {
+      setIsVerified(localStorage.getItem('findit_verified') === 'true');
+    };
+    checkVerify();
+
+    window.addEventListener('findit_verified_change', checkVerify);
+    return () => window.removeEventListener('findit_verified_change', checkVerify);
+  }, []);
 
   const toggleMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-50 text-neutral-900 font-sans">
-      <header className="sticky top-0 z-50 bg-white border-b border-neutral-200">
+    <div className="min-h-screen flex flex-col font-sans transition-colors duration-200">
+      <header className="sticky top-0 z-50 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
               <Link to="/" className="flex items-center gap-2">
-                <ShieldCheck className="w-8 h-8 text-primary-600" />
-                <span className="font-bold text-2xl tracking-tight text-primary-900">Findit</span>
+                <ShieldCheck className="w-8 h-8 text-primary-600 dark:text-primary-500" />
+                <span className="font-bold text-2xl tracking-tight text-primary-900 dark:text-white">Findit</span>
               </Link>
             </div>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex space-x-8 items-center">
-              <Link to="/marketplace" className={`text-sm font-medium hover:text-primary-600 transition-colors ${location.pathname === '/marketplace' ? 'text-primary-600' : 'text-neutral-600'}`}>Marketplace</Link>
-              <Link to="/trust" className={`text-sm font-medium hover:text-primary-600 transition-colors ${location.pathname === '/trust' ? 'text-primary-600' : 'text-neutral-600'}`}>Trust & Safety</Link>
+              <Link to="/marketplace" className={`text-sm font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors ${location.pathname === '/marketplace' ? 'text-primary-600 dark:text-primary-400' : 'text-neutral-600 dark:text-neutral-400'}`}>Marketplace</Link>
+              <Link to="/trust" className={`text-sm font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors ${location.pathname === '/trust' ? 'text-primary-600 dark:text-primary-400' : 'text-neutral-600 dark:text-neutral-400'}`}>Trust & Safety</Link>
+              {!isVerified && (
+                <Link to="/verification" className={`text-sm font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors ${location.pathname === '/verification' ? 'text-primary-600 dark:text-primary-400' : 'text-neutral-600 dark:text-neutral-400'}`}>Verify ID</Link>
+              )}
             </nav>
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center space-x-4">
-              <Link to="/messages" className="p-2 text-neutral-600 hover:text-primary-600 rounded-full hover:bg-primary-50 transition-colors">
+              <Link to="/messages" className="p-2 text-neutral-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-full hover:bg-primary-50 dark:hover:bg-neutral-800 transition-colors">
                 <MessageSquare className="w-5 h-5" />
               </Link>
-              <Link to="/dashboard" className="p-2 text-neutral-600 hover:text-primary-600 rounded-full hover:bg-primary-50 transition-colors">
+              <Link to="/dashboard" className="p-2 text-neutral-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-full hover:bg-primary-50 dark:hover:bg-neutral-800 transition-colors">
                 <User className="w-5 h-5" />
               </Link>
-              <Link to="/login" className="flex items-center gap-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors px-3 py-2">
+              <Link to="/settings" className="p-2 text-neutral-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-full hover:bg-primary-50 dark:hover:bg-neutral-800 transition-colors">
+                <SettingsIcon className="w-5 h-5" />
+              </Link>
+              <Link to="/login" className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors px-3 py-2">
                 <LogIn className="w-4 h-4" />
                 Sign In
               </Link>
@@ -58,13 +80,14 @@ export default function Layout() {
 
         {/* Mobile Nav */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-neutral-100 px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg">
-            <Link to="/marketplace" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 hover:bg-neutral-50">Marketplace</Link>
-            <Link to="/trust" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 hover:bg-neutral-50">Trust & Safety</Link>
-            <Link to="/messages" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 hover:bg-neutral-50">Messages</Link>
-            <Link to="/dashboard" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 hover:bg-neutral-50">Seller Dashboard</Link>
-            <div className="pt-4 border-t border-neutral-100 flex flex-col gap-2">
-              <Link to="/login" onClick={toggleMenu} className="block w-full text-center px-4 py-2 border border-neutral-300 rounded-lg text-base font-medium bg-white text-neutral-700">Sign In</Link>
+          <div className="md:hidden bg-white dark:bg-neutral-900 border-t border-neutral-100 dark:border-neutral-800 px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg">
+            <Link to="/marketplace" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800">Marketplace</Link>
+            <Link to="/trust" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800">Trust & Safety</Link>
+            <Link to="/messages" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800">Messages</Link>
+            <Link to="/dashboard" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800">Seller Dashboard</Link>
+            <Link to="/settings" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800">Settings</Link>
+            <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800 flex flex-col gap-2">
+              <Link to="/login" onClick={toggleMenu} className="block w-full text-center px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg text-base font-medium bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300">Sign In</Link>
               <Link to="/create-listing" onClick={toggleMenu} className="block w-full text-center px-4 py-2 rounded-lg text-base font-medium bg-primary-600 text-white">Sell an Item</Link>
             </div>
           </div>

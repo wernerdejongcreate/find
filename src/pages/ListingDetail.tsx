@@ -1,38 +1,43 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { MapPin, ShieldCheck, Clock, CheckCircle2, AlertTriangle, MessageSquare, Heart, Lock, ChevronLeft, CreditCard, X, Smartphone, Loader2, Truck, User } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useListings } from '../hooks/useListings';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function ListingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { listings } = useListings();
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<'details' | 'processing' | 'success'>('details');
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple'>('card');
   const [deliveryMethod, setDeliveryMethod] = useState<'meetup' | 'shipping'>('meetup');
 
-  // Mock data based on the ID for preview
+  // Load active listing
+  const activeListing = useMemo(() => {
+    const found = listings.find((l) => l.id.toString() === id);
+    if (found) return found;
+    return listings[0]; // fallback
+  }, [id, listings]);
+
   const data = {
-    title: "Sony A7III Camera + Lens kit excellent condition",
-    price: 1450,
+    title: activeListing?.title || "Sony A7III Camera + Lens kit excellent condition",
+    price: activeListing?.price || 1450,
     images: [
-      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800",
-      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800&auto=format&fit=crop&w=400&q=60"
+      activeListing?.img || "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800",
+       activeListing?.img || "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800&auto=format&fit=crop&w=400&q=60"
     ],
-    description: `Selling my beloved Sony A7III. I've only used it for a few weekend trips, shutter count is less than 5000. It comes with the standard kit lens, a carrying bag, an extra battery, and original charging cables.
-    
-The screen has had a protector on since day 1 so no scratches. Reason for selling: Upgrading to A7IV.
-    
-Happy to let you test it out before accepting the item. Let me know if you have any questions!`,
-    condition: "Like New",
-    postedAt: "2 hours ago",
+    description: `Selling my beloved item. It is in great condition. I've only used it a few times. \n\nReason for selling: Decluttering and raising funds for a move.\n\nHappy to let you test it out before accepting the item. Let me know if you have any questions!`,
+    condition: activeListing?.condition || "Like New",
+    postedAt: activeListing?.time || "2 hours ago",
     views: 45,
     location: "Downtown, San Francisco (approx 1.2 mi)",
     seller: {
-      name: "Alex Tran",
-      initial: "A",
+      name: activeListing?.isMine ? "You" : "Alex Tran",
+      initial: activeListing?.isMine ? "Y" : "A",
       memberSince: "2022",
-      verified: true,
-      trustScore: 98,
+      verified: activeListing ? activeListing.verified : true,
+      trustScore: activeListing?.sellerScore || 98,
       completedDeals: 14,
       avgResponseTime: "< 1 hour"
     }
@@ -41,10 +46,11 @@ Happy to let you test it out before accepting the item. Let me know if you have 
   const shippingCost = 15;
   const buyerFeePercent = 0.05;
   const buyerFee = data.price * buyerFeePercent;
-  const total = (deliveryMethod === 'shipping' ? data.price + shippingCost + buyerFee : data.price + buyerFee);
+  const serviceFeePercent = 0.03;
+  const serviceFee = data.price * serviceFeePercent;
+  const total = (deliveryMethod === 'shipping' ? data.price + shippingCost + buyerFee + serviceFee : data.price + buyerFee + serviceFee);
   
-  const sellerFeePercent = 0.05;
-  const sellerEarnings = data.price - (data.price * sellerFeePercent);
+  const sellerEarnings = data.price; 
 
   const handlePay = () => {
     setCheckoutStep('processing');
@@ -126,7 +132,7 @@ Happy to let you test it out before accepting the item. Let me know if you have 
                    <Lock className="w-5 h-5" /> Buy it Securely
                  </button>
                  <button 
-                  onClick={() => navigate('/messages')}
+                  onClick={() => navigate(`/messages?chatId=${id}`)}
                   className="w-full bg-white text-neutral-700 font-bold py-3.5 rounded-xl border-2 border-neutral-200 hover:bg-neutral-50 hover:border-neutral-300 transition flex justify-center items-center gap-2"
                  >
                    <MessageSquare className="w-5 h-5" /> Message Seller
@@ -334,9 +340,13 @@ Happy to let you test it out before accepting the item. Let me know if you have 
                         <span>${shippingCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                       </div>
                     )}
-                    <div className="flex justify-between items-center text-neutral-600 border-b border-neutral-200 pb-2">
+                    <div className="flex justify-between items-center text-neutral-600">
                       <span>Buyer Protection Fee (5%)</span>
                       <span>${buyerFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-neutral-600 border-b border-neutral-200 pb-2">
+                      <span>Platform Service Fee (3%)</span>
+                      <span>${serviceFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                     <div className="flex justify-between items-center font-bold text-neutral-900 pt-2 text-base">
                       <span>Total to Pay</span>
@@ -344,7 +354,7 @@ Happy to let you test it out before accepting the item. Let me know if you have 
                     </div>
                     <div className="mt-2 pt-2 border-t border-neutral-200 text-xs text-neutral-500 flex justify-between">
                       <span className="flex items-center gap-1"><Lock className="w-3 h-3" /> Seller Payout:</span>
-                      <span className="font-medium text-neutral-600">${sellerEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (after 5% seller fee)</span>
+                      <span className="font-medium text-neutral-600">${sellerEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (100% of item price)</span>
                     </div>
                   </div>
 
@@ -361,11 +371,37 @@ Happy to let you test it out before accepting the item. Let me know if you have 
               )}
 
               {checkoutStep === 'processing' && (
-                <div className="h-full flex flex-col justify-center items-center py-12 animate-in fade-in">
-                  <Loader2 className="w-12 h-12 text-primary-600 animate-spin mb-6" />
-                  <h3 className="text-xl font-bold text-neutral-900 mb-2">Processing Payment...</h3>
-                  <p className="text-neutral-500 text-center max-w-xs">Securing your funds in our shielded escrow account.</p>
-                </div>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="h-full flex flex-col justify-center items-center py-12"
+                >
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+                    className="mb-8 relative"
+                  >
+                     <div className="absolute inset-0 bg-primary-100 rounded-full blur-xl scale-150"></div>
+                     <Loader2 className="w-16 h-16 text-primary-600 relative z-10" />
+                  </motion.div>
+                  <motion.h3 
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-2xl font-bold text-neutral-900 mb-2"
+                  >
+                    Processing Payment...
+                  </motion.h3>
+                  <motion.p 
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-neutral-500 text-center max-w-xs"
+                  >
+                    Securing your funds in our shielded escrow account.
+                  </motion.p>
+                </motion.div>
               )}
 
               {checkoutStep === 'success' && (

@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Marketplace from './pages/Marketplace';
@@ -13,25 +13,42 @@ import TrustSafety from './pages/TrustSafety';
 import Payments from './pages/Payments';
 import AuthFlow from './pages/AuthFlow';
 import CreateListing from './pages/CreateListing';
+import Verification from './pages/Verification';
+import Settings from './pages/Settings';
+
+const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+  const isAuth = localStorage.getItem('findit_auth') === 'true';
+  const location = useLocation();
+  if (!isAuth) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  return children;
+};
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<AuthFlow mode="login" />} />
-        <Route path="/signup" element={<AuthFlow mode="signup" />} />
-        
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="marketplace" element={<Marketplace />} />
-          <Route path="listing/:id" element={<ListingDetail />} />
-          <Route path="messages" element={<Messages />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="trust" element={<TrustSafety />} />
-          <Route path="payments" element={<Payments />} />
-          <Route path="create-listing" element={<CreateListing />} />
-        </Route>
-      </Routes>
+      <div className="animate-in fade-in zoom-in-[0.98] duration-1000">
+        <Routes>
+          <Route path="/login" element={<AuthFlow mode="login" />} />
+          <Route path="/signup" element={<AuthFlow mode="signup" />} />
+          <Route path="/verification" element={<ProtectedRoute><Verification /></ProtectedRoute>} />
+          
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="marketplace" element={<Marketplace />} />
+            <Route path="listing/:id" element={<ListingDetail />} />
+            <Route path="trust" element={<TrustSafety />} />
+            <Route path="payments" element={<Payments />} />
+            
+            {/* Protected Routes */}
+            <Route path="messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+            <Route path="dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="create-listing" element={<ProtectedRoute><CreateListing /></ProtectedRoute>} />
+            <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          </Route>
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }
