@@ -13,28 +13,41 @@ export default function AuthFlow({ mode }: { mode: 'login' | 'signup' }) {
     } else {
       // Simulate real auth
       localStorage.setItem('findit_auth', 'true');
-      navigate('/dashboard');
+      
+      const isVerified = localStorage.getItem('findit_verified') === 'true';
+      const isPoaVerified = localStorage.getItem('findit_poa_verified') === 'true';
+
+      if (!isVerified) {
+        navigate('/verification');
+      } else if (!isPoaVerified) {
+        navigate('/proof-of-address');
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-6">
-        <Link to="/" className="inline-flex justify-center mb-4">
-          <ShieldCheck className="w-12 h-12 text-primary-600" />
-        </Link>
-        <h2 className="mt-2 text-3xl font-extrabold text-neutral-900 tracking-tight">
-          {mode === 'login' ? 'Sign in to Findit' : 'Create your secure account'}
-        </h2>
-        <p className="mt-2 text-sm text-neutral-600">
-          {mode === 'login' ? (
-            <>Don't have an account? <Link to="/signup" className="font-medium text-primary-600 hover:text-primary-500">Sign up</Link></>
-          ) : (
-            <>Already have an account? <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500">Sign in</Link></>
-          )}
-        </p>
-      </div>
+        <div className="flex flex-col items-center justify-center mb-6">
+          <Link to="/" className="inline-flex justify-center mb-4">
+            <ShieldCheck className="w-12 h-12 text-primary-600" />
+          </Link>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-semibold border border-green-200 mb-2">
+            <ShieldCheck className="w-3.5 h-3.5" /> ID Verification Required To Trade
+          </div>
+          <h2 className="text-3xl font-extrabold text-neutral-900 tracking-tight">
+            {mode === 'login' ? 'Sign in to Findit' : 'Create your secure account'}
+          </h2>
+          <p className="mt-2 text-sm text-neutral-600">
+            {mode === 'login' ? (
+              <>Don't have an account? <Link to="/signup" className="font-medium text-primary-600 hover:text-primary-500">Sign up</Link></>
+            ) : (
+              <>Already have an account? <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500">Sign in</Link></>
+            )}
+          </p>
+        </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-xl shadow-neutral-200/50 sm:rounded-2xl sm:px-10 border border-neutral-100 relative overflow-hidden">
@@ -145,10 +158,24 @@ export default function AuthFlow({ mode }: { mode: 'login' | 'signup' }) {
               </div>
 
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <button type="button" onClick={() => navigate('/dashboard')} className="w-full inline-flex justify-center py-3 px-4 border border-neutral-300 rounded-xl shadow-sm bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition">
+                <button type="button" onClick={() => {
+                  localStorage.setItem('findit_auth', 'true');
+                  const isVerified = localStorage.getItem('findit_verified') === 'true';
+                  const isPoaVerified = localStorage.getItem('findit_poa_verified') === 'true';
+                  if (!isVerified) navigate('/verification');
+                  else if (!isPoaVerified) navigate('/proof-of-address');
+                  else navigate('/dashboard');
+                }} className="w-full inline-flex justify-center py-3 px-4 border border-neutral-300 rounded-xl shadow-sm bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition">
                   Google
                 </button>
-                <button type="button" onClick={() => navigate('/dashboard')} className="w-full inline-flex justify-center py-3 px-4 border border-neutral-300 rounded-xl shadow-sm bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition">
+                <button type="button" onClick={() => {
+                  localStorage.setItem('findit_auth', 'true');
+                  const isVerified = localStorage.getItem('findit_verified') === 'true';
+                  const isPoaVerified = localStorage.getItem('findit_poa_verified') === 'true';
+                  if (!isVerified) navigate('/verification');
+                  else if (!isPoaVerified) navigate('/proof-of-address');
+                  else navigate('/dashboard');
+                }} className="w-full inline-flex justify-center py-3 px-4 border border-neutral-300 rounded-xl shadow-sm bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition">
                   Apple
                 </button>
               </div>

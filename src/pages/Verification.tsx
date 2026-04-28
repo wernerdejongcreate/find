@@ -100,12 +100,12 @@ export default function Verification() {
                <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex justify-center items-center mx-auto mb-6 shadow-green-100 shadow-xl">
                  <CheckCircle2 className="w-12 h-12" />
                </div>
-               <h3 className="text-2xl font-bold text-neutral-900 mb-2">You're Verified!</h3>
+               <h3 className="text-2xl font-bold text-neutral-900 mb-2">ID Verified!</h3>
                <p className="text-neutral-500 max-w-sm mx-auto mb-8">
-                 Your identity has been confirmed. You now have full access to create listings, message sellers, and checkout securely.
+                 Your identity has been confirmed. Next, we need to verify your address.
                </p>
-               <Link to="/dashboard" className="inline-block w-full bg-primary-600 text-white font-bold py-3.5 rounded-xl hover:bg-primary-700 transition shadow-sm">
-                 Go to Dashboard
+               <Link to="/proof-of-address" className="inline-block w-full bg-primary-600 text-white font-bold py-3.5 rounded-xl hover:bg-primary-700 transition shadow-sm">
+                 Continue to Address Verification
                </Link>
             </div>
           )}

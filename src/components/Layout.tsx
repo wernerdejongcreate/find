@@ -48,8 +48,9 @@ export default function Layout() {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center space-x-4">
-              <Link to="/messages" className="p-2 text-neutral-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-full hover:bg-primary-50 dark:hover:bg-neutral-800 transition-colors">
+              <Link to="/messages" className="relative p-2 text-neutral-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-full hover:bg-primary-50 dark:hover:bg-neutral-800 transition-colors">
                 <MessageSquare className="w-5 h-5" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-neutral-900"></span>
               </Link>
               <Link to="/dashboard" className="p-2 text-neutral-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-full hover:bg-primary-50 dark:hover:bg-neutral-800 transition-colors">
                 <User className="w-5 h-5" />
@@ -61,6 +62,12 @@ export default function Layout() {
                 <LogIn className="w-4 h-4" />
                 Sign In
               </Link>
+              {!isVerified && (
+                <Link to="/verification" className="flex items-center gap-1.5 text-sm font-medium text-green-600 hover:text-green-700 transition-colors px-3 py-2 bg-green-50 rounded-full border border-green-200">
+                  <ShieldCheck className="w-4 h-4" />
+                  Verify ID
+                </Link>
+              )}
               <Link to="/create-listing" className="bg-primary-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm">
                 Sell an Item
               </Link>
@@ -83,11 +90,19 @@ export default function Layout() {
           <div className="md:hidden bg-white dark:bg-neutral-900 border-t border-neutral-100 dark:border-neutral-800 px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-lg">
             <Link to="/marketplace" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800">Marketplace</Link>
             <Link to="/trust" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800">Trust & Safety</Link>
-            <Link to="/messages" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800">Messages</Link>
+            <Link to="/messages" onClick={toggleMenu} className="px-3 py-2 rounded-md text-base font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center justify-between">
+              <span>Messages</span>
+              <span className="bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">2</span>
+            </Link>
             <Link to="/dashboard" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800">Seller Dashboard</Link>
             <Link to="/settings" onClick={toggleMenu} className="block px-3 py-2 rounded-md text-base font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800">Settings</Link>
             <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800 flex flex-col gap-2">
               <Link to="/login" onClick={toggleMenu} className="block w-full text-center px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg text-base font-medium bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300">Sign In</Link>
+              {!isVerified && (
+                <Link to="/verification" onClick={toggleMenu} className="flex items-center justify-center gap-2 w-full text-center px-4 py-2 rounded-lg text-base font-medium bg-green-50 text-green-700 border border-green-200">
+                  <ShieldCheck className="w-5 h-5" /> Verify ID
+                </Link>
+              )}
               <Link to="/create-listing" onClick={toggleMenu} className="block w-full text-center px-4 py-2 rounded-lg text-base font-medium bg-primary-600 text-white">Sell an Item</Link>
             </div>
           </div>

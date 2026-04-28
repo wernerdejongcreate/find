@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import type { ReactNode } from 'react';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Marketplace from './pages/Marketplace';
@@ -14,9 +15,10 @@ import Payments from './pages/Payments';
 import AuthFlow from './pages/AuthFlow';
 import CreateListing from './pages/CreateListing';
 import Verification from './pages/Verification';
+import ProofOfAddress from './pages/ProofOfAddress';
 import Settings from './pages/Settings';
 
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const isAuth = localStorage.getItem('findit_auth') === 'true';
   const location = useLocation();
   if (!isAuth) {
@@ -33,6 +35,7 @@ export default function App() {
           <Route path="/login" element={<AuthFlow mode="login" />} />
           <Route path="/signup" element={<AuthFlow mode="signup" />} />
           <Route path="/verification" element={<ProtectedRoute><Verification /></ProtectedRoute>} />
+          <Route path="/proof-of-address" element={<ProtectedRoute><ProofOfAddress /></ProtectedRoute>} />
           
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
